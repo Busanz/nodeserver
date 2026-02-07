@@ -1,6 +1,7 @@
 const http = require('http');
 const url = require('url');
 const fs = require('fs');
+
 const locations = require('./data/location-data.js');
 const allItems = require('./data/productItems.js');
 
@@ -28,64 +29,63 @@ const pageHeader = (country, flag) => {
 
 const contentByWrite = (location) => {
   return `
-          <main>
-            <h3 style="max-width:800px">
-              <i>
-                Our strategically located warehouses ensure efficient distribution, faster delivery times, and a seamless purchasing experience, no matter where you are.
-              </i>
-            </h3>
+    <main>
+      <h3 style="max-width:800px">
+        <i>
+          Our strategically located warehouses ensure efficient distribution, faster delivery times, and a seamless purchasing experience, no matter where you are.
+        </i>
+      </h3>
 
-            <h2>How find your dream items</h2>
+      <h2>How find your dream items</h2>
 
-            <ol>
-              <strong>
-                <li>Choose a product category</li>
-                <li>Browse available items</li>
-              </strong>
-            </ol>
+      <ol>
+        <strong>
+          <li>Choose a product category</li>
+          <li>Browse available items</li>
+        </strong>
+      </ol>
 
-            <ul>
-              <strong>
-                <li>
-                  Start by selecting a <i>product category</i> below to explore available products
-                </li>
-              </strong>
-            </ul>
-            <hr>
-          </main>
-          
-          <div>
-            <nav>
-            <h4 style="display: inline-block">
-              <a href="/${location}?catogery=men">Men</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${location}?catogery=women">Women</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${location}?catogery=kids">Kids</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${location}?catogery=sports">Sports</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${location}?catogery=working">Working</a>
-            </h4>&nbsp;  
-            </nav>
-            <hr>
-            <p>The routes and queries /${location}?catogery="Catogery Name" of current page.</p>
-          </div>
-          `;
+      <ul>
+        <strong>
+          <li>
+            Start by selecting a <i>product category</i> below to explore available products
+          </li>
+        </strong>
+      </ul>
+      <hr>
+    </main>
+    
+    <div>
+      <nav>
+      <h4 style="display: inline-block">
+        <a href="/${location}?catogery=men">Men</a>
+      </h4>&nbsp;
+      <h4 style="display: inline-block">
+        <a href="/${location}?catogery=women">Women</a>
+      </h4>&nbsp;
+      <h4 style="display: inline-block">
+        <a href="/${location}?catogery=kids">Kids</a>
+      </h4>&nbsp;
+      <h4 style="display: inline-block">
+        <a href="/${location}?catogery=sports">Sports</a>
+      </h4>&nbsp;
+      <h4 style="display: inline-block">
+        <a href="/${location}?catogery=working">Working</a>
+      </h4>&nbsp;  
+      </nav>
+      <hr>
+      <p>The routes and queries /${location}?catogery="Catogery Name" of current page.</p>
+    </div>`;
 };
 
 const getCatogeryItems = (catogery) => {
-  const itemByCatogery = allItems.filter((el) => el.catogery === catogery);
+  const itemsByCatogery = allItems.filter((el) => el.catogery === catogery);
   let listOfItems = '';
 
-  if (itemByCatogery.length === 0) {
+  if (itemsByCatogery.length === 0) {
     listOfItems = `<h3>No items for this catogery</h3>`;
   } else {
-    itemByCatogery.forEach((el) => {
+    itemsByCatogery.forEach((el) => {
       listOfItems += `
         <div>
           <h3>${el.itemName} - ${el.brand}</h3>
