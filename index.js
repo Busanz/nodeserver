@@ -3,6 +3,10 @@ const url = require('url');
 const fs = require('fs');
 const locations = require('./data/location-data.js');
 const menItems = require('./data/men.js');
+const womenItems = require('./data/women.js');
+const kidsItems = require('./data/kids');
+
+let contentLoadOnExternal = false;
 
 const converFirstLetterCapital = (str) => {
   str = str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
@@ -24,6 +28,51 @@ const pageHeader = (country, flag) => {
     <h1>Welcome to the Urban-Collection - ${converFirstLetterCapital(country)} ${flag}</h1>
     <h2>Choose catogarie where that you need to find your dream items</h2>
     `;
+};
+
+const getCatogeryItems = (catogery) => {
+  let listOfItems = '';
+  if (catogery === 'men') {
+    menItems.forEach((el) => {
+      listOfItems += `
+        <div>
+          <h3>${el.itemName} - ${el.brand}</h3>
+          <h4>Color : ${el.color}</h4>
+          <h4>Material: ${el.material}</h4>
+          <h4>Avalable sizes: ${el.size}</h4>
+          <p>Return policy:<i>${el.policy}</i></p>      
+          <hr>        
+        </div>`;
+    });
+  }
+
+  if (catogery === 'women') {
+    womenItems.forEach((el) => {
+      listOfItems += `
+        <div>
+          <h3>${el.itemName} - ${el.brand}</h3>
+          <h4>Color : ${el.color}</h4>
+          <h4>Material: ${el.material}</h4>
+          <h4>Avalable sizes: ${el.size}</h4>
+          <p>Return policy:<i>${el.policy}</i></p>      
+          <hr>        
+        </div> `;
+    });
+  }
+  if (catogery === 'kids') {
+    kidsItems.forEach((el) => {
+      listOfItems += `
+        <div>
+          <h3>${el.itemName} - ${el.brand}</h3>
+          <h4>Color : ${el.color}</h4>
+          <h4>Material: ${el.material}</h4>
+          <h4>Avalable sizes: ${el.size}</h4>
+          <p>Return policy:<i>${el.policy}</i></p>      
+          <hr>        
+        </div> `;
+    });
+  }
+  return listOfItems;
 };
 
 http
@@ -76,10 +125,15 @@ http
 
       if (currentPath === route_link) {
         res.write(pageHeader(lr.country, lr.flagUniCode));
-        res.write(`<h3><a href="/"> &#x2B05; Back </a></h3>`);
+        if (!query.catogery) {
+          res.write(`<h3><a href="/"> &#x2B05; Back </a></h3>`);
+        } else {
+          res.write(`<h3><a href="/${lr.country}"> &#x2B05; Back </a></h3>`);
+        }
         res.write(`<hr>`);
 
         if (route_link === '/sweden') {
+          contentLoadOnExternal = true;
           res.write(`
           <main>
             <h3 style="max-width:800px">
@@ -129,9 +183,10 @@ http
             <p>This is the content of the ${lr.country} page.</p>
           </div>
           `);
-          return res.end();
+          return;
         }
         if (route_link === '/denmark') {
+          contentLoadOnExternal = true;
           res.write(`
           <main>
             <h3 style="max-width:800px">
@@ -184,29 +239,26 @@ http
         fs.readFile(`./content/${lr.country}-content.html`, (err, data) => {
           if (err) {
             res.write('There is something wrong with the data file');
+            contentLoadOnExternal = true;
             return;
           } else {
             res.write(data);
-            if (query.catogery === 'men') {
-              menItems.forEach((el) => {
-                res.write(`<h2>${el.type}</h2>`);
-              });
-            }
-            if (query.catogery === 'women') {
-              menItems.forEach((el) => {
-                res.write(`<h2>${el.matirial}</h2>`);
-              });
+            if (query.catogery) {
+              res.write(getCatogeryItems(query.catogery));
+              res.end();
             }
           }
-          res.end();
+          return;
         });
       }
+      return;
     });
+
+    if (query.catogery && contentLoadOnExternal) {
+      res.write(getCatogeryItems(query.catogery));
+      res.end();
+    }
+    contentLoadOnExternal = false;
     return;
   })
   .listen(8080, () => console.log('The server is runing on port 8080'));
-
-// Read at least two queries passed in the url
-// Generate different content based on the queries
-// Create a data file containing an array of objects
-// Display the object information based on the route or query

@@ -1,5 +1,6 @@
-const menItems = [
+const catogeryItems = [
   {
+    catogery: 'men',
     itemName: 'Slim Fit Chino Trousers',
     material: 'Cotton, Elastane',
     color: 'Beige',
@@ -8,6 +9,7 @@ const menItems = [
     policy: '14 days money back guarantee',
   },
   {
+    catogery: 'men',
     itemName: 'Regular Fit Denim Trousers',
     material: 'Denim Cotton',
     color: 'Dark Blue',
@@ -16,6 +18,7 @@ const menItems = [
     policy: '30 days return policy',
   },
   {
+    catogery: 'men',
     itemName: 'Formal Office Trousers',
     material: 'Polyester, Viscose',
     color: 'Charcoal Grey',
@@ -24,6 +27,7 @@ const menItems = [
     policy: '14 days exchange guarantee',
   },
   {
+    catogery: 'men',
     itemName: 'Relaxed Fit Cargo Trousers',
     material: 'Cotton Twill',
     color: 'Olive Green',
@@ -32,6 +36,7 @@ const menItems = [
     policy: '14 days money back guarantee',
   },
   {
+    catogery: 'men',
     itemName: 'Athletic Performance Trousers',
     material: 'Polyester, Spandex',
     color: 'Black',
@@ -41,4 +46,4 @@ const menItems = [
   },
 ];
 
-module.exports = menItems;
+module.exports = catogeryItems;
