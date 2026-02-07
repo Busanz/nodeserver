@@ -2,11 +2,7 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const locations = require('./data/location-data.js');
-const menItems = require('./data/men.js');
-const womenItems = require('./data/women.js');
-const kidsItems = require('./data/kids');
-
-let contentLoadOnExternal = false;
+const allItems = require('./data/productItems.js');
 
 const converFirstLetterCapital = (str) => {
   str = str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
@@ -30,10 +26,66 @@ const pageHeader = (country, flag) => {
     `;
 };
 
+const contentByWrite = (location) => {
+  return `
+          <main>
+            <h3 style="max-width:800px">
+              <i>
+                Our strategically located warehouses ensure efficient distribution, faster delivery times, and a seamless purchasing experience, no matter where you are.
+              </i>
+            </h3>
+
+            <h2>How find your dream items</h2>
+
+            <ol>
+              <strong>
+                <li>Choose a product category</li>
+                <li>Browse available items</li>
+              </strong>
+            </ol>
+
+            <ul>
+              <strong>
+                <li>
+                  Start by selecting a <i>product category</i> below to explore available products
+                </li>
+              </strong>
+            </ul>
+            <hr>
+          </main>
+          
+          <div>
+            <nav>
+            <h4 style="display: inline-block">
+              <a href="/${location}?catogery=men">Men</a>
+            </h4>&nbsp;
+            <h4 style="display: inline-block">
+              <a href="/${location}?catogery=women">Women</a>
+            </h4>&nbsp;
+            <h4 style="display: inline-block">
+              <a href="/${location}?catogery=kids">Kids</a>
+            </h4>&nbsp;
+            <h4 style="display: inline-block">
+              <a href="/${location}?catogery=sports">Sports</a>
+            </h4>&nbsp;
+            <h4 style="display: inline-block">
+              <a href="/${location}?catogery=working">Working</a>
+            </h4>&nbsp;  
+            </nav>
+            <hr>
+            <p>The routes and queries /${location}?catogery="Catogery Name" of current page.</p>
+          </div>
+          `;
+};
+
 const getCatogeryItems = (catogery) => {
+  const itemByCatogery = allItems.filter((el) => el.catogery === catogery);
   let listOfItems = '';
-  if (catogery === 'men') {
-    menItems.forEach((el) => {
+
+  if (itemByCatogery.length === 0) {
+    listOfItems = `<h3>No items for this catogery</h3>`;
+  } else {
+    itemByCatogery.forEach((el) => {
       listOfItems += `
         <div>
           <h3>${el.itemName} - ${el.brand}</h3>
@@ -43,33 +95,6 @@ const getCatogeryItems = (catogery) => {
           <p>Return policy:<i>${el.policy}</i></p>      
           <hr>        
         </div>`;
-    });
-  }
-
-  if (catogery === 'women') {
-    womenItems.forEach((el) => {
-      listOfItems += `
-        <div>
-          <h3>${el.itemName} - ${el.brand}</h3>
-          <h4>Color : ${el.color}</h4>
-          <h4>Material: ${el.material}</h4>
-          <h4>Avalable sizes: ${el.size}</h4>
-          <p>Return policy:<i>${el.policy}</i></p>      
-          <hr>        
-        </div> `;
-    });
-  }
-  if (catogery === 'kids') {
-    kidsItems.forEach((el) => {
-      listOfItems += `
-        <div>
-          <h3>${el.itemName} - ${el.brand}</h3>
-          <h4>Color : ${el.color}</h4>
-          <h4>Material: ${el.material}</h4>
-          <h4>Avalable sizes: ${el.size}</h4>
-          <p>Return policy:<i>${el.policy}</i></p>      
-          <hr>        
-        </div> `;
     });
   }
   return listOfItems;
@@ -117,7 +142,8 @@ http
       locations.forEach((location) => {
         res.write(routeLink(location.country));
       });
-      return res.end();
+      res.write(`<p>The routes are /"Location Name" of current page.</p>`);
+      res.end();
     }
 
     locations.forEach((lr) => {
@@ -132,133 +158,30 @@ http
         }
         res.write(`<hr>`);
 
-        if (route_link === '/sweden') {
-          contentLoadOnExternal = true;
-          res.write(`
-          <main>
-            <h3 style="max-width:800px">
-              <i>
-                Our strategically located warehouses ensure efficient distribution, faster delivery times, and a seamless purchasing experience, no matter where you are.
-              </i>
-            </h3>
-
-            <h2>How find your dream items</h2>
-
-            <ol>
-              <strong>
-                <li>Choose a product category</li>
-                <li>Browse available items</li>
-              </strong>
-            </ol>
-
-            <ul>
-              <strong>
-                <li>
-                  Start by selecting a <i>product category</i> below to explore available products
-                </li>
-              </strong>
-            </ul>
-            <hr>
-          </main>
-          
-          <div>
-            <nav>
-            <h4 style="display: inline-block">
-              <a href="/${lr.country}?catogery=men">Men</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${lr.country}?catogery=women">Women</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${lr.country}?catogery=kids">Kids</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${lr.country}?catogery=sports">Sports</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${lr.country}?catogery=working">Working</a>
-            </h4>&nbsp;  
-            </nav>
-            <hr>
-            <p>This is the content of the ${lr.country} page.</p>
-          </div>
-          `);
-          return;
-        }
-        if (route_link === '/denmark') {
-          contentLoadOnExternal = true;
-          res.write(`
-          <main>
-            <h3 style="max-width:800px">
-              <i>Our strategically located warehouses ensure efficient distribution, faster delivery times, and a seamless purchasing experience, no matter where you are.</i>
-            </h3>
-
-            <h2>How find your dream items</h2>
-
-            <ol>
-              <strong>
-                <li>Choose a product category</li>
-                <li>Browse available items</li>
-              </strong>
-            </ol>
-
-            <ul>
-              <strong>
-                <li>
-                  Start by selecting a <i>product category</i> below to explore available products
-                </li>
-              </strong>
-            </ul>
-            <hr>
-          </main>
-          <div>
-            <nav>
-            <h4 style="display: inline-block">
-              <a href="/${lr.country}?catogery=men">Men</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${lr.country}?catogery=women">Women</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${lr.country}?catogery=kids">Kids</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${lr.country}?catogery=sports">Sports</a>
-            </h4>&nbsp;
-            <h4 style="display: inline-block">
-              <a href="/${lr.country}?catogery=working">Working</a>
-            </h4>&nbsp;  
-            </nav>
-            <hr>
-            <p>This is the content of the ${lr.country} page.</p>
-          </div>
-          `);
-          return;
+        if (route_link === '/denmark' || route_link === '/sweden') {
+          res.write(contentByWrite(lr.country));
+          if (query.catogery) {
+            res.write(getCatogeryItems(query.catogery));
+          }
+          res.end();
         }
 
         fs.readFile(`./content/${lr.country}-content.html`, (err, data) => {
           if (err) {
             res.write('There is something wrong with the data file');
-            contentLoadOnExternal = true;
             return;
           } else {
             res.write(data);
             if (query.catogery) {
               res.write(getCatogeryItems(query.catogery));
-              res.end();
             }
+            res.end();
           }
           return;
         });
       }
       return;
     });
-
-    if (query.catogery && contentLoadOnExternal) {
-      res.write(getCatogeryItems(query.catogery));
-      res.end();
-    }
-    contentLoadOnExternal = false;
     return;
   })
   .listen(8080, () => console.log('The server is runing on port 8080'));
